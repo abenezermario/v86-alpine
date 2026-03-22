@@ -8,7 +8,7 @@ ENV KERNEL=virt
 RUN apk add --no-cache \
     openrc alpine-base agetty alpine-conf \
     linux-$KERNEL linux-firmware-none \
-    quickjs git
+    quickjs git nodejs npm
 
 # Auto-login on console and serial
 RUN sed -i 's/getty 38400 tty1/agetty --autologin root tty1 linux/' /etc/inittab
@@ -21,7 +21,9 @@ RUN setup-hostname localhost
 RUN printf 'rmmod ne2k-pci && modprobe ne2k-pci\nrmmod virtio-net && modprobe virtio-net\nhwclock -s\nsetup-interfaces -a -r\n' > /root/networking.sh && chmod +x /root/networking.sh
 
 # Sample file
+# Sample JS files for testing both runtimes
 RUN echo 'console.log("Hello from QuickJS!");' > /root/hello.js
+RUN echo 'console.log("Hello from Node.js " + process.version);' > /root/hello-node.js
 
 # OpenRC services
 RUN for i in devfs dmesg mdev hwdrivers; do rc-update add $i sysinit; done
